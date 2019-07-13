@@ -1,0 +1,15 @@
+[package]
+name = "awranovsky_test"
+version = "0.1.0"
+authors = ["Alexander Wranovsky <alex@wranovsky.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+cc = "1.0.25"
+
+[dependencies]
+volatile-register = "0.2.0"
+#fe_rtos           = { path = "../FeRTOS" }
+#rust_tm4c123      = { path = "../rust_tm4c123" }

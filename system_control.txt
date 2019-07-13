@@ -1,0 +1,186 @@
+SYSTEM_CONTROL
+0x000 DID0 RO - Device Identification 0 255
+0x004 DID1 RO 0x101F.C06E Device Identification 1 257
+0x038 PTBOCTL RW 0x0000.0003 Power-Temp Brown Out Control 259
+0x050 RIS RO 0x0000.0000 Raw Interrupt Status 261
+0x054 IMC RW
+0x058 MISC RW1C
+0x05C RESC RW 0x0000.0002 Reset Cause 267
+0x060 PWRTC RW1C 0x0000.0000 Power-Temperature Cause 270
+0x064 NMIC RW 0x0000.0000 NMI Cause Register 271
+0x07C MOSCCTL RW 0x0000.000C Main Oscillator Control 273
+0x0B0 RSCLKCFG RW 0x0000.0000 Run and Sleep Mode Configuration Register 275
+0x0C0 MEMTIM0 RW 0x0030.0030 Memory Timing Parameter Register 0 for Main Flash and
+0x138 ALTCLKCFG RW 0x0000.0000 Alternate Clock Configuration 280
+0x144 DSCLKCFG RW 0x0000.0000 Deep Sleep Clock Configuration Register 281
+0x148 DIVSCLK RW 0x0000.0000 Divisor and Source Clock Configuration 284
+0x14C SYSPROP RO 0x0003.1F31 System Properties 286
+0x150 PIOSCCAL RW 0x0000.0000 Precision Internal Oscillator Calibration 289
+0x154 PIOSCSTAT RO 0x0040.0040 Precision Internal Oscillator Statistics 291
+0x160 PLLFREQ0 RW 0x0000.0000 PLL Frequency 0 292
+0x164 PLLFREQ1 RW 0x0000.0000 PLL Frequency 1 293
+0x168 PLLSTAT RO 0x0000.0000 PLL Status 294
+0x188 SLPPWRCFG RW 0x0000.0000 Sleep Power Configuration 295
+0x18C DSLPPWRCFG RW 0x0000.0000 Deep-Sleep Power Configuration 297
+0x1A0 NVMSTAT RO 0x0000.0001 Non-Volatile Memory Information 299
+0x1B4 LDOSPCTL RW 0x0000.0018 LDO Sleep Power Control 300
+0x1B8 LDOSPCAL RO 0x0000.1818 LDO Sleep Power Calibration 302
+0x1BC LDODPCTL RW 0x0000.0012 LDO Deep-Sleep Power Control 303
+0x1C0 LDODPCAL RO 0x0000.1212 LDO Deep-Sleep Power Calibration 305
+0x1CC SDPMST RO 0x0000.0000 Sleep / Deep-Sleep Power Mode Status 306
+0x1D8 RESBEHAVCTL RW 0xFFFF.FFFF Reset Behavior Control Register 309
+0x1F4 HSSR RW 0x0000.0000 Hardware System Service Request 311
+0x280 USBPDS RO 0x0000.003F USB Power Domain Status 312
+0x284 USBMPC RW 0x0000.0003 USB Memory Power Control 313
+0x288 EMACPDS RO 0x0000.003F Ethernet MAC Power Domain Status 314
+0x28C EMACMPC RW 0x0000.0003 Ethernet MAC Memory Power Control 315
+0x298 CAN0PDS RO
+0x29C CAN0MPC RW 0x0000.0003 CAN 0 Memory Power Control 317
+0x2A0 CAN1PDS RO 0x0000.003F CAN 1 Power Domain Status 318
+0x2A4 CAN1MPC RW 0x0000.0003 CAN 1 Memory Power Control 319
+0x300 PPWD RO 0x0000.0003 Watchdog Timer Peripheral Present 320
+0x304 PPTIMER RO 0x0000.00FF 16/32-Bit General-Purpose Timer Peripheral Present 321
+0x308 PPGPIO RO 0x0000.7FFF General-Purpose Input/Output Peripheral Present 323
+0x30C PPDMA RO 0x0000.0001 Micro Direct Memory Access Peripheral Present 326
+0x310 PPEPI RO 0x0000.0001 EPI Peripheral Present 327
+0x314 PPHIB RO 0x0000.0001 Hibernation Peripheral Present 328
+0x318 PPUART RO 0x0000.00FF Universal Asynchronous Receiver/Transmitter Peripheral
+0x31C PPSSI RO 0x0000.000F Synchronous Serial Interface Peripheral Present 331
+0x320 PPI2C RO 0x0000.03FF Inter-Integrated Circuit Peripheral Present 333
+0x328 PPUSB RO 0x0000.0001 Universal Serial Bus Peripheral Present 335
+0x330 PPEPHY RO 0x0000.0001 Ethernet PHY Peripheral Present 336
+0x334 PPCAN RO 0x0000.0003 Controller Area Network Peripheral Present 337
+0x338 PPADC RO 0x0000.0003 Analog-to-Digital Converter Peripheral Present 338
+0x33C PPACMP RO 0x0000.0001 Analog Comparator Peripheral Present 339
+0x340 PPPWM RO 0x0000.0001 Pulse Width Modulator Peripheral Present 340
+0x344 PPQEI RO 0x0000.0001 Quadrature Encoder Interface Peripheral Present 341
+0x348 PPLPC RO 0x0000.0000 Low Pin Count Interface Peripheral Present 342
+0x350 PPPECI RO 0x0000.0000 Platform Environment Control Interface Peripheral
+0x354 PPFAN RO 0x0000.0000 Fan Control Peripheral Present 344
+0x358 PPEEPROM RO 0x0000.0001 EEPROM Peripheral Present 345
+0x35C PPWTIMER RO 0x0000.0000 32/64-Bit Wide General-Purpose Timer Peripheral
+0x370 PPRTS RO 0x0000.0000 Remote Temperature Sensor Peripheral Present 347
+0x374 PPCCM RO 0x0000.0001 CRC Module Peripheral Present 348
+0x390 PPLCD RO 0x0000.0000 LCD Peripheral Present 349
+0x398 PPOWIRE RO 0x0000.0000 1-Wire Peripheral Present 350
+0x39C PPEMAC RO 0x0000.0001 Ethernet MAC Peripheral Present 351
+0x3A0 PPPRB RO
+0x3A4 PPHIM RO 0x0000.0000 Human Interface Master Peripheral Present 353
+0x500 SRWD RW 0x0000.0000 Watchdog Timer Software Reset 354
+0x504 SRTIMER RW 0x0000.0000 16/32-Bit General-Purpose Timer Software Reset 355
+0x508 SRGPIO RW 0x0000.0000 General-Purpose Input/Output Software Reset 357
+0x50C SRDMA RW 0x0000.0000 Micro Direct Memory Access Software Reset 360
+0x510 SREPI RW 0x0000.0000 EPI Software Reset 361
+0x514 SRHIB RW 0x0000.0000 Hibernation Software Reset 362
+0x518 SRUART RW 0x0000.0000 Universal Asynchronous Receiver/Transmitter Software
+0x51C SRSSI RW 0x0000.0000 Synchronous Serial Interface Software Reset 365
+0x520 SRI2C RW 0x0000.0000 Inter-Integrated Circuit Software Reset 367
+0x528 SRUSB RW 0x0000.0000 Universal Serial Bus Software Reset 369
+0x530 SREPHY RW 0x0000.0000 Ethernet PHY Software Reset 370
+0x534 SRCAN RW 0x0000.0000 Controller Area Network Software Reset 371
+0x538 SRADC RW 0x0000.0000 Analog-to-Digital Converter Software Reset 372
+0x53C SRACMP RW 0x0000.0000 Analog Comparator Software Reset 373
+0x540 SRPWM RW 0x0000.0000 Pulse Width Modulator Software Reset 374
+0x544 SRQEI RW 0x0000.0000 Quadrature Encoder Interface Software Reset 375
+0x558 SREEPROM RW 0x0000.0000 EEPROM Software Reset 376
+0x574 SRCCM RW 0x0000.0000 CRC Module Software Reset 377
+0x59C SREMAC RW 0x0000.0000 Ethernet MAC Software Reset 378
+0x600 RCGCWD RW 0x0000.0000 Watchdog Timer Run Mode Clock Gating Control 379
+0x604 RCGCTIMER RW 0x0000.0000 16/32-Bit General-Purpose Timer Run Mode Clock Gating
+0x608 RCGCGPIO RW 0x0000.0000 General-Purpose Input/Output Run Mode Clock Gating
+0x60C RCGCDMA RW 0x0000.0000 Micro Direct Memory Access Run Mode Clock Gating
+0x610 RCGCEPI RW 0x0000.0000 EPI Run Mode Clock Gating Control 386
+0x614 RCGCHIB RW 0x0000.0001 Hibernation Run Mode Clock Gating Control 387
+0x618 RCGCUART RW 0x0000.0000 Universal Asynchronous Receiver/Transmitter Run Mode
+0x61C RCGCSSI RW 0x0000.0000 Synchronous Serial Interface Run Mode Clock Gating
+0x620 RCGCI2C RW
+0x628 RCGCUSB RW 0x0000.0000 Universal Serial Bus Run Mode Clock Gating Control 393
+0x630 RCGCEPHY RW 0x0000.0000 Ethernet PHY Run Mode Clock Gating Control 394
+0x634 RCGCCAN RW 0x0000.0000 Controller Area Network Run Mode Clock Gating Control 395
+0x638 RCGCADC RW 0x0000.0000 Analog-to-Digital Converter Run Mode Clock Gating
+0x63C RCGCACMP RW 0x0000.0000 Analog Comparator Run Mode Clock Gating Control 397
+0x640 RCGCPWM RW 0x0000.0000 Pulse Width Modulator Run Mode Clock Gating Control 398
+0x644 RCGCQEI RW 0x0000.0000 Quadrature Encoder Interface Run Mode Clock Gating
+0x658 RCGCEEPROM RW 0x0000.0000 EEPROM Run Mode Clock Gating Control 400
+0x674 RCGCCCM RW 0x0000.0000 CRC Module Run Mode Clock Gating Control 401
+0x69C RCGCEMAC RW 0x0000.0000 Ethernet MAC Run Mode Clock Gating Control 402
+0x700 SCGCWD RW 0x0000.0000 Watchdog Timer Sleep Mode Clock Gating Control 403
+0x704 SCGCTIMER RW 0x0000.0000 16/32-Bit General-Purpose Timer Sleep Mode Clock
+0x708 SCGCGPIO RW 0x0000.0000 General-Purpose Input/Output Sleep Mode Clock Gating
+0x70C SCGCDMA RW 0x0000.0000 Micro Direct Memory Access Sleep Mode Clock Gating
+0x710 SCGCEPI RW 0x0000.0000 EPI Sleep Mode Clock Gating Control 410
+0x714 SCGCHIB RW 0x0000.0001 Hibernation Sleep Mode Clock Gating Control 411
+0x718 SCGCUART RW 0x0000.0000 Universal Asynchronous Receiver/Transmitter Sleep
+0x71C SCGCSSI RW 0x0000.0000 Synchronous Serial Interface Sleep Mode Clock Gating
+0x720 SCGCI2C RW 0x0000.0000 Inter-Integrated Circuit Sleep Mode Clock Gating Control 415
+0x728 SCGCUSB RW 0x0000.0000 Universal Serial Bus Sleep Mode Clock Gating Control 417
+0x730 SCGCEPHY RW 0x0000.0000 Ethernet PHY Sleep Mode Clock Gating Control 418
+0x734 SCGCCAN RW 0x0000.0000 Controller Area Network Sleep Mode Clock Gating
+0x738 SCGCADC RW 0x0000.0000 Analog-to-Digital Converter Sleep Mode Clock Gating
+0x73C SCGCACMP RW 0x0000.0000 Analog Comparator Sleep Mode Clock Gating Control 421
+0x740 SCGCPWM RW 0x0000.0000 Pulse Width Modulator Sleep Mode Clock Gating Control 422
+0x744 SCGCQEI RW
+0x758 SCGCEEPROM RW 0x0000.0000 EEPROM Sleep Mode Clock Gating Control 424
+0x774 SCGCCCM RW 0x0000.0000 CRC Module Sleep Mode Clock Gating Control 425
+0x79C SCGCEMAC RW 0x0000.0000 Ethernet MAC Sleep Mode Clock Gating Control 426
+0x800 DCGCWD RW 0x0000.0000 Watchdog Timer Deep-Sleep Mode Clock Gating
+0x804 DCGCTIMER RW 0x0000.0000 16/32-Bit General-Purpose Timer Deep-Sleep Mode
+0x808 DCGCGPIO RW 0x0000.0000 General-Purpose Input/Output Deep-Sleep Mode
+0x80C DCGCDMA RW 0x0000.0000 Micro Direct Memory Access Deep-Sleep Mode Clock
+0x810 DCGCEPI RW 0x0000.0000 EPI Deep-Sleep Mode Clock Gating Control 434
+0x814 DCGCHIB RW 0x0000.0001 Hibernation Deep-Sleep Mode Clock Gating Control
+0x818 DCGCUART RW 0x0000.0000 Universal Asynchronous Receiver/Transmitter
+0x81C DCGCSSI RW 0x0000.0000 Synchronous Serial Interface Deep-Sleep Mode
+0x820 DCGCI2C RW 0x0000.0000 Inter-Integrated Circuit Deep-Sleep Mode Clock
+0x828 DCGCUSB RW 0x0000.0000 Universal Serial Bus Deep-Sleep Mode Clock Gating
+0x830 DCGCEPHY RW 0x0000.0000 Ethernet PHY Deep-Sleep Mode Clock Gating
+0x834 DCGCCAN RW 0x0000.0000 Controller Area Network Deep-Sleep Mode Clock
+0x838 DCGCADC RW 0x0000.0000 Analog-to-Digital Converter Deep-Sleep Mode Clock
+0x83C DCGCACMP RW 0x0000.0000 Analog Comparator Deep-Sleep Mode Clock Gating
+0x840 DCGCPWM RW 0x0000.0000 Pulse Width Modulator Deep-Sleep Mode Clock
+0x844 DCGCQEI RW 0x0000.0000 Quadrature Encoder Interface Deep-Sleep Mode
+0x858 DCGCEEPROM RW 0x0000.0000 EEPROM Deep-Sleep Mode Clock Gating Control
+0x874 DCGCCCM RW 0x0000.0000 CRC Module Deep-Sleep Mode Clock Gating Control
+0x89C DCGCEMAC RW 0x0000.0000 Ethernet MAC Deep-Sleep Mode Clock Gating
+0x900 PCWD RW 0x0000.0003 Watchdog Timer Power Control 451
+0x904 PCTIMER RW 0x0000.00FF 16/32-Bit General-Purpose Timer Power Control 453
+0x908 PCGPIO RW
+0x90C PCDMA RW 0x0000.0001 Micro Direct Memory Access Power Control 461
+0x910 PCEPI RW 0x0000.0001 External Peripheral Interface Power Control 463
+0x914 PCHIB RW 0x0000.0001 Hibernation Power Control 465
+0x918 PCUART RW 0x0000.00FF Universal Asynchronous Receiver/Transmitter Power
+0x91C PCSSI RW 0x0000.000F Synchronous Serial Interface Power Control 470
+0x920 PCI2C RW 0x0000.03FF Inter-Integrated Circuit Power Control 472
+0x928 PCUSB RW 0x0000.0001 Universal Serial Bus Power Control 476
+0x930 PCEPHY RW 0x0000.0000 Ethernet PHY Power Control 478
+0x934 PCCAN RW 0x0000.0003 Controller Area Network Power Control 480
+0x938 PCADC RW 0x0000.0003 Analog-to-Digital Converter Power Control 482
+0x93C PCACMP RW 0x0000.0001 Analog Comparator Power Control 484
+0x940 PCPWM RW 0x0000.0001 Pulse Width Modulator Power Control 486
+0x944 PCQEI RW 0x0000.0001 Quadrature Encoder Interface Power Control 488
+0x958 PCEEPROM RW 0x0000.0001 EEPROM Power Control 490
+0x974 PCCCM RW 0x0000.0001 CRC Module Power Control 492
+0x99C PCEMAC RW 0x0000.0001 Ethernet MAC Power Control 494
+0xA00 PRWD RO 0x0000.0000 Watchdog Timer Peripheral Ready 496
+0xA04 PRTIMER RO 0x0000.0000 16/32-Bit General-Purpose Timer Peripheral Ready
+0xA08 PRGPIO RO 0x0000.0000 General-Purpose Input/Output Peripheral Ready 499
+0xA0C PRDMA RO 0x0000.0000 Micro Direct Memory Access Peripheral Ready 502
+0xA10 PREPI RO 0x0000.0000 EPI Peripheral Ready 503
+0xA14 PRHIB RO 0x0000.0001 Hibernation Peripheral Ready 504
+0xA18 PRUART RO 0x0000.0000 Universal Asynchronous Receiver/Transmitter
+0xA1C PRSSI RO 0x0000.0000 Synchronous Serial Interface Peripheral Ready 507
+0xA20 PRI2C RO 0x0000.0000 Inter-Integrated Circuit Peripheral Ready 509
+0xA28 PRUSB RO 0x0000.0000 Universal Serial Bus Peripheral Ready 512
+0xA30 PREPHY RO 0x0000.0000 Ethernet PHY Peripheral Ready 513
+0xA34 PRCAN RO 0x0000.0000 Controller Area Network Peripheral Ready 514
+0xA38 PRADC RO 0x0000.0000 Analog-to-Digital Converter Peripheral Ready 515
+0xA3C PRACMP RO 0x0000.0000 Analog Comparator Peripheral Ready 516
+0xA40 PRPWM RO
+0xA44 PRQEI RO 0x0000.0000 Quadrature Encoder Interface Peripheral Ready 518
+0xA58 PREEPROM RO 0x0000.0000 EEPROM Peripheral Ready 519
+0xA74 PRCCM RO 0x0000.0000 CRC Module Peripheral Ready 520
+0xA9C PREMAC RO 0x0000.0000 Ethernet MAC Peripheral Ready 521
+0xF20 UNIQUEID0 RO - Unique ID 0 522
+0xF24 UNIQUEID1 RO - Unique ID 1 522
+0xF28 UNIQUEID2 RO - Unique ID 2 522
+0xF2C UNIQUEID3 RO - Unique ID 3 522
