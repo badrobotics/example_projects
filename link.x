@@ -13,14 +13,12 @@ ENTRY(Reset);
 EXTERN(RESET_VECTOR);
 EXTERN(EXCEPTIONS);
 
-__sram_top = ORIGIN(RAM) + LENGTH(RAM);
-
 SECTIONS
 {
   .vector_table ORIGIN(FLASH) :
   {
     /* First entry: initial Stack Pointer value */
-    LONG(__sram_top);
+    LONG(ORIGIN(RAM) + LENGTH(RAM));
 
     /* Second entry: reset vector */
     KEEP(*(.vector_table.reset_vector));
@@ -86,4 +84,5 @@ PROVIDE(SysTick = DefaultExceptionHandler);
 /* Define the base addresses of all the peripherals */
 SYSTEM_CONTROL = 0x400FE000;
 GPIOA          = 0x40058000;
+GPION          = 0x40064000;
 UART0          = 0x4000C000;

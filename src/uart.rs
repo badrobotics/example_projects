@@ -1,4 +1,4 @@
-#![no_std]
+#![allow(non_snake_case)]
 
 use volatile_register::{RW, RO, WO};
 

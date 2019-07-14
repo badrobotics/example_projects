@@ -1,4 +1,5 @@
-#![no_std]
+#![allow(non_snake_case)]
+#![allow(dead_code)]
 
 use volatile_register::{RW, RO};
 
@@ -35,6 +36,25 @@ const PLL_LOCK: u32 = 0x1;
 // MEMTIM0 bits
 const EEPROM_TIMING_BITS: u32 = 0x03ef_0000;
 const FLASH_TIMING_BITS:  u32 = 0x0000_03ef;
+
+#[allow(dead_code)]
+pub enum GpioPort {
+    GpioA,
+    GpioB,
+    GpioC,
+    GpioD,
+    GpioE,
+    GpioF,
+    GpioG,
+    GpioH,
+    GpioJ,
+    GpioK,
+    GpioL,
+    GpioM,
+    GpioN,
+    GpioP,
+    GpioQ,
+}
 
 #[repr(C)]
 pub struct SystemControl {
@@ -400,5 +420,29 @@ impl SystemControl {
 
         // Return the new clock frequency
         actual_cpu_freq
+    }
+
+    pub fn enable_gpio_clock(&mut self, port: GpioPort) {
+        let port_bitmask: u32 = match port {
+            GpioPort::GpioA => 1<<0,
+            GpioPort::GpioB => 1<<1,
+            GpioPort::GpioC => 1<<2,
+            GpioPort::GpioD => 1<<3,
+            GpioPort::GpioE => 1<<4,
+            GpioPort::GpioF => 1<<5,
+            GpioPort::GpioG => 1<<6,
+            GpioPort::GpioH => 1<<7,
+            GpioPort::GpioJ => 1<<8,
+            GpioPort::GpioK => 1<<9,
+            GpioPort::GpioL => 1<<10,
+            GpioPort::GpioM => 1<<11,
+            GpioPort::GpioN => 1<<12,
+            GpioPort::GpioP => 1<<13,
+            GpioPort::GpioQ => 1<<14,
+        };
+
+        unsafe {
+            self.RCGCGPIO.modify(|x| x | port_bitmask)
+        }
     }
 }
