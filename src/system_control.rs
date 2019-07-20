@@ -57,6 +57,28 @@ pub enum GpioPort {
     GpioQ,
 }
 
+impl GpioPort {
+    pub fn bitmask(&self) -> u32 {
+        match self {
+            GpioPort::GpioA => 1<<0,
+            GpioPort::GpioB => 1<<1,
+            GpioPort::GpioC => 1<<2,
+            GpioPort::GpioD => 1<<3,
+            GpioPort::GpioE => 1<<4,
+            GpioPort::GpioF => 1<<5,
+            GpioPort::GpioG => 1<<6,
+            GpioPort::GpioH => 1<<7,
+            GpioPort::GpioJ => 1<<8,
+            GpioPort::GpioK => 1<<9,
+            GpioPort::GpioL => 1<<10,
+            GpioPort::GpioM => 1<<11,
+            GpioPort::GpioN => 1<<12,
+            GpioPort::GpioP => 1<<13,
+            GpioPort::GpioQ => 1<<14,
+        }
+    }
+}
+
 #[repr(C)]
 pub struct SystemControl {
     pub DID0: RO<u32>,
@@ -424,27 +446,28 @@ impl SystemControl {
         actual_cpu_freq
     }
 
-    pub fn enable_gpio_clock(&mut self, port: GpioPort) {
-        let port_bitmask: u32 = match port {
-            GpioPort::GpioA => 1<<0,
-            GpioPort::GpioB => 1<<1,
-            GpioPort::GpioC => 1<<2,
-            GpioPort::GpioD => 1<<3,
-            GpioPort::GpioE => 1<<4,
-            GpioPort::GpioF => 1<<5,
-            GpioPort::GpioG => 1<<6,
-            GpioPort::GpioH => 1<<7,
-            GpioPort::GpioJ => 1<<8,
-            GpioPort::GpioK => 1<<9,
-            GpioPort::GpioL => 1<<10,
-            GpioPort::GpioM => 1<<11,
-            GpioPort::GpioN => 1<<12,
-            GpioPort::GpioP => 1<<13,
-            GpioPort::GpioQ => 1<<14,
-        };
-
-        unsafe {
-            self.RCGCGPIO.modify(|x| x | port_bitmask)
+    /// Enables the clock to a GPIO peripheral and waits for it to be ready. This function must be
+    /// called on the peripheral before any accesses can be made to it.
+    ///
+    /// Returns true if the peripheral was configured correctly, and false if the peripheral isn't
+    /// available on this microcontroller.
+    ///
+    /// # Arguments
+    /// * `port` - one of the GPIO port enums
+    pub fn enable_gpio_clock(&mut self, port: GpioPort) -> bool {
+        // First check that the peripheral is available on this microcontroller
+        if self.PPGPIO.read() & port.bitmask() == 0 {
+            return false
         }
+
+        // Enable the peripheral clock
+        unsafe {
+            self.RCGCGPIO.modify(|x| x | port.bitmask());
+        }
+
+        // Wait for the peripheral to be ready
+        while self.PRGPIO.read() & port.bitmask() == 0 {};
+
+        true
     }
 }
