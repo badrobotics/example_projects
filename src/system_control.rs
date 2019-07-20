@@ -10,7 +10,7 @@ const NOXTAL_BIT: u32 = 1<<2;
 const MOSCIM_BIT: u32 = 1<<1;
 const CVAL_BIT:   u32 = 1<<0;
 
-// RIS bits
+// RIS and MISC bits
 const MOSCPUPRIS_BIT: u32 = 1<<8;
 
 // RSCLKCFG bits
@@ -24,7 +24,8 @@ const NEWFREQ_BIT:        u32 = 1<<30;
 const USEPLL_BIT:         u32 = 1<<28;
 
 // PLLFREQ0 bits
-const MDIV_BITS: u32 = 0x000fffff;
+const MDIV_BITS:  u32 = 0x000fffff;
+const PLLPWR_BIT: u32 = 1<<23;
 
 // PLLFREQ1 bits
 const Q_BITS: u32 = 0x00001f00;
@@ -376,10 +377,11 @@ impl SystemControl {
             unsafe { self.MOSCCTL.modify(|x| x & !OSCRNG_BIT) };
         }
 
-        // Enable the external crystal, then power on the main oscillator and wait for it to become
-        // ready.
+        // Clear the main oscillator ready bit, enable the external crystal, power on the main
+        // oscillator, and then wait for it to become ready.
         unsafe {
-            self.MOSCCTL.modify(|x| x | NOXTAL_BIT);
+            self.MISC.write(MOSCPUPRIS_BIT);
+            self.MOSCCTL.modify(|x| x & !NOXTAL_BIT);
             self.MOSCCTL.modify(|x| x & !PWRDN_BIT);
         }
         while self.RIS.read() & MOSCPUPRIS_BIT == 0 {};
@@ -391,7 +393,7 @@ impl SystemControl {
 
         // Program PLL settings to set the new clock frequency
         unsafe {
-            self.PLLFREQ0.modify(|x| (x & !MDIV_BITS) | (MFRAC<<10) | (MINT));
+            self.PLLFREQ0.modify(|x| (x & !MDIV_BITS) | (MFRAC<<10) | (MINT) | PLLPWR_BIT);
             self.PLLFREQ1.modify(|x| (x & !(Q_BITS|N_BITS) | (Q<<8) | (N)));
             self.RSCLKCFG.modify(|x| x | NEWFREQ_BIT);
         }
