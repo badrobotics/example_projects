@@ -14,6 +14,21 @@ pub enum Pin {
     Pin7,
 }
 
+impl Pin {
+    fn bitmask(&self) -> u32 {
+        match self {
+            Pin::Pin0 => 1<<0,
+            Pin::Pin1 => 1<<1,
+            Pin::Pin2 => 1<<2,
+            Pin::Pin3 => 1<<3,
+            Pin::Pin4 => 1<<4,
+            Pin::Pin5 => 1<<5,
+            Pin::Pin6 => 1<<6,
+            Pin::Pin7 => 1<<7,
+        }
+    }
+}
+
 #[repr(C)]
 pub struct Gpio {
     pub GPIODATA: RW<u32>,
@@ -65,35 +80,29 @@ pub struct Gpio {
     pub GPIOPCellID3: RO<u32>,
 }
 
+#[allow(dead_code)]
 impl Gpio {
-    fn get_pin_bitmask(pin: Pin) -> u32 {
-        match pin {
-            Pin::Pin0 => 1<<0,
-            Pin::Pin1 => 1<<1,
-            Pin::Pin2 => 1<<2,
-            Pin::Pin3 => 1<<3,
-            Pin::Pin4 => 1<<4,
-            Pin::Pin5 => 1<<5,
-            Pin::Pin6 => 1<<6,
-            Pin::Pin7 => 1<<7,
+    pub fn configure_as_output(&mut self, pin: Pin) {
+        unsafe {
+            self.GPIODIR.modify(|x| x | pin.bitmask());
         }
     }
 
-    pub fn configure_as_output(&mut self, pin: Pin) {
+    pub fn configure_as_input(&mut self, pin: Pin) {
         unsafe {
-            self.GPIODIR.modify(|x| x | Gpio::get_pin_bitmask(pin));
+            self.GPIODIR.modify(|x| x & !pin.bitmask());
         }
     }
 
     pub fn set_low(&mut self, pin: Pin) {
         unsafe {
-            self.GPIODATA.modify(|x| x | Gpio::get_pin_bitmask(pin));
+            self.GPIODATA.modify(|x| x | pin.bitmask());
         }
     }
 
     pub fn set_high(&mut self, pin: Pin) {
         unsafe {
-            self.GPIODATA.modify(|x| x & !Gpio::get_pin_bitmask(pin));
+            self.GPIODATA.modify(|x| x & !pin.bitmask());
         }
     }
 }
