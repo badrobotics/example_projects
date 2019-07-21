@@ -31,8 +31,7 @@ impl Pin {
 
 #[repr(C)]
 pub struct Gpio {
-    pub GPIODATA: RW<u32>,
-    Reserved0: [RO<u32>; 255],
+    pub GPIODATA: [RW<u32>; 256],
     pub GPIODIR: RW<u32>,
     pub GPIOIS: RW<u32>,
     pub GPIOIBE: RW<u32>,
@@ -85,24 +84,26 @@ impl Gpio {
     pub fn configure_as_output(&mut self, pin: Pin) {
         unsafe {
             self.GPIODIR.modify(|x| x | pin.bitmask());
+            self.GPIODEN.modify(|x| x | pin.bitmask());
         }
     }
 
     pub fn configure_as_input(&mut self, pin: Pin) {
         unsafe {
             self.GPIODIR.modify(|x| x & !pin.bitmask());
+            self.GPIODEN.modify(|x| x | pin.bitmask());
         }
     }
 
     pub fn set_low(&mut self, pin: Pin) {
         unsafe {
-            self.GPIODATA.modify(|x| x | pin.bitmask());
+            self.GPIODATA[pin.bitmask() as usize].write(0x00);
         }
     }
 
     pub fn set_high(&mut self, pin: Pin) {
         unsafe {
-            self.GPIODATA.modify(|x| x & !pin.bitmask());
+            self.GPIODATA[pin.bitmask() as usize].write(0xff);
         }
     }
 }

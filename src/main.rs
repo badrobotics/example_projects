@@ -23,20 +23,17 @@ pub fn main() -> ! {
     sysctl.enable_gpio_clock(system_control::GpioPort::GpioN);
     gpion.configure_as_output(gpio::Pin::Pin0);
     gpion.configure_as_output(gpio::Pin::Pin1);
-    gpion.configure_as_output(gpio::Pin::Pin2);
 
     loop {
         gpion.set_low(gpio::Pin::Pin0);
-        gpion.set_low(gpio::Pin::Pin1);
-        gpion.set_low(gpio::Pin::Pin2);
+        gpion.set_high(gpio::Pin::Pin1);
         let mut i = 5_000_000;
         while i > 0 {
             i = i - 1;
         }
 
         gpion.set_high(gpio::Pin::Pin0);
-        gpion.set_high(gpio::Pin::Pin1);
-        gpion.set_high(gpio::Pin::Pin2);
+        gpion.set_low(gpio::Pin::Pin1);
         let mut i = 5_000_000;
         while i > 0 {
             i = i - 1;
