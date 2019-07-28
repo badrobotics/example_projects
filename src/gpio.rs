@@ -27,6 +27,32 @@ impl Pin {
             Pin::Pin7 => 1<<7,
         }
     }
+
+    fn port_control_bits(&self) -> u32 {
+        match self {
+            Pin::Pin0 => 0xf<<0,
+            Pin::Pin1 => 0xf<<1,
+            Pin::Pin2 => 0xf<<2,
+            Pin::Pin3 => 0xf<<3,
+            Pin::Pin4 => 0xf<<4,
+            Pin::Pin5 => 0xf<<5,
+            Pin::Pin6 => 0xf<<6,
+            Pin::Pin7 => 0xf<<7,
+        }
+    }
+
+    fn port_control_offset(&self) -> u32 {
+        match self {
+            Pin::Pin0 => 0,
+            Pin::Pin1 => 4,
+            Pin::Pin2 => 8,
+            Pin::Pin3 => 12,
+            Pin::Pin4 => 16,
+            Pin::Pin5 => 20,
+            Pin::Pin6 => 24,
+            Pin::Pin7 => 28,
+        }
+    }
 }
 
 #[repr(C)]
@@ -41,7 +67,7 @@ pub struct Gpio {
     pub GPIOMIS: RO<u32>,
     pub GPIOICR: WO<u32>,
     pub GPIOAFSEL: RW<u32>,
-    Reserved1: [RO<u32>; 55],
+    Reserved0: [RO<u32>; 55],
     pub GPIODR2R: RW<u32>,
     pub GPIODR4R: RW<u32>,
     pub GPIODR8R: RW<u32>,
@@ -61,10 +87,10 @@ pub struct Gpio {
     pub GPIOWAKEPEN: RW<u32>,
     pub GPIOWAKELVL: RW<u32>,
     pub GPIOWAKESTAT: RO<u32>,
-    Reserved2: [RO<u32>; 669],
+    Reserved1: [RO<u32>; 669],
     pub GPIOPP: RO<u32>,
     pub GPIOPC: RW<u32>,
-    Reserved3: [RO<u32>; 2],
+    Reserved2: [RO<u32>; 2],
     pub GPIOPeriphID4: RO<u32>,
     pub GPIOPeriphID5: RO<u32>,
     pub GPIOPeriphID6: RO<u32>,
@@ -92,6 +118,26 @@ impl Gpio {
         unsafe {
             self.GPIODIR.modify(|x| x & !pin.bitmask());
             self.GPIODEN.modify(|x| x | pin.bitmask());
+        }
+    }
+
+    ///
+    /// Selects the alternate function to use. See table 26-5 on page 1808 of the datasheet for
+    /// valid values of func.
+    ///
+    pub fn select_alternate_function(&mut self, pin: Pin, func: u32) {
+        if func == 0 {
+            // If the alternate function is 0, configure as GPIO
+            unsafe {
+                self.GPIOAFSEL.modify(|x| x & !pin.bitmask());
+                self.GPIOPCTL.modify(|x|  x & !pin.port_control_bits());
+            }
+        } else if func < 16 {
+            // Configure the pin for non-gpio digital function
+            unsafe {
+                self.GPIOPCTL.modify(|x|  (x & !pin.port_control_bits()) | (func << pin.port_control_offset()));
+                self.GPIOAFSEL.modify(|x| x | pin.bitmask());
+            }
         }
     }
 

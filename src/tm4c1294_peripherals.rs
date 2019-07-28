@@ -39,6 +39,7 @@ impl TM4C129Peripherals {
     }
 }
 
+// Todo: Make it so this function can only be called once.
 pub fn get_peripherals() -> TM4C129Peripherals {
     unsafe {
         TM4C129Peripherals {

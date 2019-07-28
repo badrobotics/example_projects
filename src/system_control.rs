@@ -79,6 +79,33 @@ impl GpioPort {
     }
 }
 
+#[allow(dead_code)]
+pub enum Uart {
+    Uart0,
+    Uart1,
+    Uart2,
+    Uart3,
+    Uart4,
+    Uart5,
+    Uart6,
+    Uart7,
+}
+
+impl Uart {
+    pub fn bitmask(&self) -> u32 {
+        match self {
+            Uart::Uart0 => 1<<0,
+            Uart::Uart1 => 1<<1,
+            Uart::Uart2 => 1<<2,
+            Uart::Uart3 => 1<<3,
+            Uart::Uart4 => 1<<4,
+            Uart::Uart5 => 1<<5,
+            Uart::Uart6 => 1<<6,
+            Uart::Uart7 => 1<<7,
+        }
+    }
+}
+
 #[repr(C)]
 pub struct SystemControl {
     pub DID0: RO<u32>,
@@ -467,6 +494,31 @@ impl SystemControl {
 
         // Wait for the peripheral to be ready
         while self.PRGPIO.read() & port.bitmask() == 0 {};
+
+        true
+    }
+
+    /// Enables the clock to a UART peripheral and waits for it to be ready. This function must be
+    /// called on the peripheral before any accesses can be made to it.
+    ///
+    /// Returns true if the peripheral was configured correctly, and false if the peripheral isn't
+    /// available on this microcontroller.
+    ///
+    /// # Arguments
+    /// * `uart` - one of the UART enums
+    pub fn enable_uart_clock(&mut self, uart: Uart) -> bool {
+        // First check that the peripheral is available on this microcontroller
+        if self.PPUART.read() & uart.bitmask() == 0 {
+            return false
+        }
+
+        // Enable the peripheral clock
+        unsafe {
+            self.RCGCUART.modify(|x| x | uart.bitmask());
+        }
+
+        // Wait for the peripheral to be ready
+        while self.PRUART.read() & uart.bitmask() == 0 {};
 
         true
     }
