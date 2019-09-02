@@ -106,6 +106,19 @@ impl Uart {
     }
 }
 
+#[allow(dead_code)]
+pub enum Pwm {
+    Pwm0,
+}
+
+impl Pwm {
+    pub fn bitmask(&self) -> u32 {
+        match self {
+            Pwm::Pwm0 => 1<<0,
+        }
+    }
+}
+
 #[repr(C)]
 pub struct SystemControl {
     pub DID0: RO<u32>,
@@ -519,6 +532,31 @@ impl SystemControl {
 
         // Wait for the peripheral to be ready
         while self.PRUART.read() & uart.bitmask() == 0 {};
+
+        true
+    }
+
+    /// Enables the clock to a PWM peripheral and waits for it to be ready. This function must be
+    /// called on the peripheral before any accesses can be made to it.
+    ///
+    /// Returns true if the peripheral was configured correctly, and false if the peripheral isn't
+    /// available on this microcontroller.
+    ///
+    /// # Arguments
+    /// * `pwm` - one of the PWM enums
+    pub fn enable_pwm_clock(&mut self, pwm: Pwm) -> bool {
+        // First check that the peripheral is available on this microcontroller
+        if self.PPPWM.read() & pwm.bitmask() == 0 {
+            return false
+        }
+
+        // Enable the peripheral clock
+        unsafe {
+            self.RCGCPWM.modify(|x| x | pwm.bitmask());
+        }
+
+        // Wait for the peripheral to be ready
+        while self.PRPWM.read() & pwm.bitmask() == 0 {};
 
         true
     }

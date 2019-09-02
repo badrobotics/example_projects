@@ -19,9 +19,14 @@ pub fn main() -> ! {
     let gpion = p.take_gpion().unwrap();
     let gpioa = p.take_gpioa().unwrap();
     let mut uart0 = p.take_uart0().unwrap();
+    let pwm0 = p.take_pwm0().unwrap();
 
     // Configure the CPU for the maximum operating frequency
     let cpu_freq = sysctl.tm4c129_config_sysclk(CPU_FREQ, XTAL_FREQ);
+
+    // Set up the PWM module
+    sysctl.enable_pwm_clock(system_control::Pwm::Pwm0);
+    pwm0.
 
     // Set up LEDs
     sysctl.enable_gpio_clock(system_control::GpioPort::GpioN);

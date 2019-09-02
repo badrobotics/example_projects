@@ -84,5 +84,7 @@ PROVIDE(SysTick = DefaultExceptionHandler);
 /* Define the base addresses of all the peripherals */
 SYSTEM_CONTROL = 0x400FE000;
 GPIOA          = 0x40058000;
+GPIOF          = 0x4005D000;
 GPION          = 0x40064000;
 UART0          = 0x4000C000;
+PWM0           = 0x40028000;

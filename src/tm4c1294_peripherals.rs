@@ -10,15 +10,19 @@ use crate::uart::Uart;
 extern "C" {
     pub static mut SYSTEM_CONTROL: SystemControl;
     pub static mut GPIOA: Gpio;
+    pub static mut GPIOF: Gpio;
     pub static mut GPION: Gpio;
     pub static mut UART0: Uart;
+    pub static mut PWM0:  Pwm;
 }
 
 pub struct TM4C129Peripherals {
     system_control: Option<&'static mut SystemControl>,
     gpioa:          Option<&'static mut Gpio>,
+    gpiof:          Option<&'static mut Gpio>,
     gpion:          Option<&'static mut Gpio>,
     uart0:          Option<&'static mut Uart>,
+    pwm0:           Option<&'static mut Pwm>,
 }
 
 impl TM4C129Peripherals {
@@ -34,8 +38,16 @@ impl TM4C129Peripherals {
         replace(&mut self.gpioa, None)
     }
 
+    pub fn take_gpiof(&mut self) -> Option<&'static mut Gpio> {
+        replace(&mut self.gpiof, None)
+    }
+
     pub fn take_uart0(&mut self) -> Option<&'static mut Uart> {
         replace(&mut self.uart0, None)
+    }
+
+    pub fn take_pwm0(&mut self) -> Option<&'static mut Pwm> {
+        replace(&mut self.pwm0, None)
     }
 }
 
@@ -45,8 +57,10 @@ pub fn get_peripherals() -> TM4C129Peripherals {
         TM4C129Peripherals {
             system_control: Some(&mut SYSTEM_CONTROL),
             gpioa: Some(&mut GPIOA),
+            gpiof: Some(&mut GPIOF),
             gpion: Some(&mut GPION),
             uart0: Some(&mut UART0),
+            pwm0:  Some(&mut PWM0),
         }
     }
 }
