@@ -10,6 +10,12 @@ edition = "2018"
 cc = "1.0.25"
 
 [dependencies]
-volatile-register = "0.2.0"
-#fe_rtos           = { path = "../FeRTOS" }
-#rust_tm4c123      = { path = "../rust_tm4c123" }
+cortex-m                = "0.5.8"
+cortex-m-rt             = "0.6.5"
+cortex-m-semihosting    = "0.3.2"
+panic-halt              = "0.2.0"
+atomic_queue            = { git = "https://github.com/thejpster/atomic-queue-rs" }
+
+[dependencies.tm4c129x-hal]
+version = "0.8.2"
+features = ["rt"]

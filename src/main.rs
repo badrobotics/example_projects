@@ -1,57 +1,68 @@
 #![no_std]
 #![no_main]
 
-mod cortex_m4_init;
-mod tm4c1294_peripherals;
-mod system_control;
-mod gpio;
-mod uart;
+extern crate panic_halt; // you can put a breakpoint on `rust_begin_unwind` to catch panics
+extern crate tm4c129x_hal as hal;
+extern crate atomic_queue;
 
-use crate::tm4c1294_peripherals::get_peripherals;
-
-const XTAL_FREQ: u32 = 25_000_000;
-const CPU_FREQ: u32 = 120_000_000;
+use core::fmt::Write;
+use hal::prelude::*;
+use atomic_queue::AtomicQueue;
 
 #[no_mangle]
 pub fn main() -> ! {
-    let mut p = get_peripherals();
-    let sysctl = p.take_system_control().unwrap();
-    let gpion = p.take_gpion().unwrap();
-    let gpioa = p.take_gpioa().unwrap();
-    let mut uart0 = p.take_uart0().unwrap();
+    let p = hal::Peripherals::take().unwrap();
 
-    // Configure the CPU for the maximum operating frequency
-    let cpu_freq = sysctl.tm4c129_config_sysclk(CPU_FREQ, XTAL_FREQ);
+    let mut sc = p.SYSCTL.constrain();
+    sc.clock_setup.oscillator = hal::sysctl::Oscillator::Main(
+        hal::sysctl::CrystalFrequency::_16mhz,
+        hal::sysctl::SystemClock::UsePll(hal::sysctl::PllOutputFrequency::_120mhz),
+    );
+    let clocks = sc.clock_setup.freeze();
 
-    // Set up LEDs
-    sysctl.enable_gpio_clock(system_control::GpioPort::GpioN);
-    gpion.configure_as_output(gpio::Pin::Pin0);
-    gpion.configure_as_output(gpio::Pin::Pin1);
+    let mut porta = p.GPIO_PORTA_AHB.split(&sc.power_control);
 
-    // Set up the debug UART
-    sysctl.enable_gpio_clock(system_control::GpioPort::GpioA);
-    sysctl.enable_uart_clock(system_control::Uart::Uart0);
-    gpioa.select_alternate_function(gpio::Pin::Pin0, 1);
-    gpioa.select_alternate_function(gpio::Pin::Pin1, 1);
+    // Activate UART
+    let mut uart = hal::serial::Serial::uart0(
+        p.UART0,
+        porta
+            .pa1
+            .into_af_push_pull::<hal::gpio::AF1>(&mut porta.control),
+        porta
+            .pa0
+            .into_af_push_pull::<hal::gpio::AF1>(&mut porta.control),
+        (),
+        (),
+        115200_u32.bps(),
+        hal::serial::NewlineMode::SwapLFtoCRLF,
+        &clocks,
+        &sc.power_control,
+    );
 
-    let _baud = uart0.configure(cpu_freq, 115200, uart::Parity::None, uart::StopBits::One, uart::WordLength::Eight).unwrap();
-    let mut uart_driver = uart::drivers::UartBlockingDriver::new(&mut uart0);
+    // Create the queue
+    let mut storage: [u8; 2] = [0; 2];
+    let ref queue: AtomicQueue<u8> = {
+        let m = AtomicQueue::new(&mut storage);
+        m
+    };
 
+    // Fill the first two slots in the queue with dummy variables
+    match queue.push(0) {
+        Err(_) => panic!("No room to push?"),
+        Ok(_) => {},
+    }
+    match queue.push(0) {
+        Err(_) => panic!("No room to push?"),
+        Ok(_) => {},
+    }
+
+    let mut counter = 0u8;
     loop {
-        gpion.set_low(gpio::Pin::Pin0);
-        gpion.set_high(gpio::Pin::Pin1);
-        uart_driver.putchar(b'a');
-        let mut i = 200_000;
-        while i > 0 {
-            i = i - 1;
+        writeln!(uart, "Hello, world! counter={} two_values_ago={}", counter, queue.pop().unwrap()).unwrap();
+        match queue.push(counter) {
+            Err(_) => panic!("No room to push?"),
+            Ok(_) => {},
         }
-
-        gpion.set_high(gpio::Pin::Pin0);
-        gpion.set_low(gpio::Pin::Pin1);
-        uart_driver.putchar(b'b');
-        let mut i = 200_000;
-        while i > 0 {
-            i = i - 1;
-        }
+        counter = counter.wrapping_add(1);
     }
 }
