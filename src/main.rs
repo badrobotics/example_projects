@@ -5,7 +5,6 @@ extern crate atomic_queue;
 
 use core::fmt::Write;
 
-use rust_tm4c::cortex_m4_init::enable_interrupts;
 use rust_tm4c::tm4c_peripherals::get_peripherals;
 use rust_tm4c::gpio;
 use rust_tm4c::system_control;
@@ -31,9 +30,6 @@ pub fn main() -> ! {
 
     // Configure the CPU for the maximum operating frequency
     let cpu_freq = sysctl.tm4c129_config_sysclk(CPU_FREQ, XTAL_FREQ);
-
-    // Enable interrupts
-    unsafe { enable_interrupts(); }
 
     // Set up LEDs
     sysctl.enable_gpio_clock(system_control::GpioPort::GpioN);
