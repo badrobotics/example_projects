@@ -88,7 +88,6 @@ pub fn main() -> ! {
 
     let mut counter = 0_u8;
     loop {
-        //nvic.set_pending(interrupt::IntType::Timer0A);
         writeln!(uart_driver, "Hello, world! counter={} two_values_ago={}", counter, queue.pop().unwrap()).unwrap();
         match queue.push(counter) {
             Err(_) => panic!("No room to push?"),

@@ -13,5 +13,5 @@ cc = "1.0.25"
 atomic_queue    = { git = "https://github.com/thejpster/atomic-queue-rs" }
 
 [dependencies.rust_tm4c]
-path = "../rust_tm4c"
+path = "../../rust_tm4c"
 features = [ "tm4c1294" ]
