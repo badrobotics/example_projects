@@ -10,12 +10,8 @@ edition = "2018"
 cc = "1.0.25"
 
 [dependencies]
-cortex-m                = "0.5.8"
-cortex-m-rt             = "0.6.5"
-cortex-m-semihosting    = "0.3.2"
-panic-halt              = "0.2.0"
-atomic_queue            = { git = "https://github.com/thejpster/atomic-queue-rs" }
+atomic_queue    = { git = "https://github.com/thejpster/atomic-queue-rs" }
 
-[dependencies.tm4c129x-hal]
-version = "0.8.2"
-features = ["rt"]
+[dependencies.rust_tm4c]
+path = "../rust_tm4c"
+features = [ "tm4c1294" ]
