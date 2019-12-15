@@ -26,8 +26,7 @@ pub fn main() -> ! {
     let gpion = p.take_gpion().unwrap();
     let gpioa = p.take_gpioa().unwrap();
     let mut uart0 = p.take_uart0().unwrap();
-    let timer0 = p.take_timer0().unwrap();
-    let timer1 = p.take_timer1().unwrap();
+    let timer0 = p.take_timer0().unwrap().create_32bit_config();
 
     // Configure the CPU for the maximum operating frequency
     let cpu_freq = sysctl.tm4c129_config_sysclk(CPU_FREQ, XTAL_FREQ);
@@ -54,24 +53,24 @@ pub fn main() -> ! {
         .unwrap();
     let mut uart_driver = uart::drivers::UartBlockingDriver::new(&mut uart0, uart::drivers::NewlineMode::CRLF);
 
-    // Set up timers to trigger at slightly different frequencies
+    // Set up the timer
     sysctl.enable_timer_clock(system_control::Timer::Timer0);
-    sysctl.enable_timer_clock(system_control::Timer::Timer1);
-    match timer0.set_periodic_mode_32bit(10000) { _ => {} }; // Timer 1 should trigger first, since it's a lower priority
-    match timer1.set_periodic_mode_32bit(10001) { _ => {} };
-
-    // Set up interrupts
     scb.int_register(interrupt::IntType::Timer0A, timer0a_handler);
-    scb.int_register(interrupt::IntType::Timer1A, timer1a_handler);
+    match timer0.set_periodic_mode_32bit(cpu_freq / 2) {
+        Err(_) => panic!("Can't call this func?"),
+        _ => {},
+    };
+    match timer0.enable_timeout_interrupt_32bit() {
+        Err(_) => panic!("Can't call this func?"),
+        _ => {},
+    };
+    unsafe { TIMER_BLOCK = Some(timer0); }
     nvic.clear_pending(interrupt::IntType::Timer0A);
-    nvic.clear_pending(interrupt::IntType::Timer1A);
-    nvic.set_priority(interrupt::IntType::Timer0A, 1); // Make timer 0 a lower priority so it can be preempted
-    nvic.set_priority(interrupt::IntType::Timer1A, 0);
+    nvic.set_priority(interrupt::IntType::Timer0A, 0);
     nvic.enable(interrupt::IntType::Timer0A);
-    nvic.enable(interrupt::IntType::Timer1A);
 
     // Create the queue
-    let mut storage: [u8; 16] = [0; 16];
+    let mut storage: [u8; 2] = [0; 2];
     let ref queue: AtomicQueue<u8> = {
         let m = AtomicQueue::new(&mut storage);
         m
@@ -87,10 +86,6 @@ pub fn main() -> ! {
         Ok(_) => {},
     }
 
-    // Give the timer interrupts access to the timers
-    unsafe { TIMER0 = Some(timer0); }
-    unsafe { TIMER1 = Some(timer1); }
-
     let mut counter = 0_u8;
     loop {
         writeln!(uart_driver, "Hello, world! counter={} two_values_ago={}", counter, queue.pop().unwrap()).unwrap();
@@ -102,20 +97,20 @@ pub fn main() -> ! {
     }
 }
 
-static mut TIMER0: Option<&'static mut timer::Timer> = None;
+static mut GPIO_BLOCK: Option<&'static mut gpio::Gpio> = None;
+static mut TIMER_BLOCK: Option<&'static mut timer::Timer> = None;
 pub unsafe extern "C" fn timer0a_handler() {
     if let Some(t) = &mut TIMER_BLOCK {
         match t.clear_timeout_interrupt_32bit() {
             _ => {},
         }
     }
-}
 
-static mut TIMER1: Option<&'static mut timer::Timer> = None;
-pub unsafe extern "C" fn timer1a_handler() {
-    if let Some(t) = &mut TIMER1 {
-        match t.clear_timeout_interrupt_32bit() {
-            _ => {},
+    if let Some(g) = &mut GPIO_BLOCK {
+        if g.get(gpio::Pin::Pin0) == 0 {
+            g.set_high(gpio::Pin::Pin0);
+        } else {
+            g.set_low(gpio::Pin::Pin0);
         }
     }
 }

@@ -1,0 +1,17 @@
+[package]
+name = "queue_test"
+version = "0.1.0"
+authors = ["Alexander Wranovsky <alex@wranovsky.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+cc = "1.0.25"
+
+[dependencies]
+atomic_queue    = { git = "https://github.com/thejpster/atomic-queue-rs" }
+
+[dependencies.rust_tm4c]
+path = "../../rust_tm4c"
+features = [ "tm4c1294" ]

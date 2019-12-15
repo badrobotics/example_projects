@@ -1,0 +1,6 @@
+/target
+**/*.rs.bk
+
+# Vim files
+*.vim
+*.swp
