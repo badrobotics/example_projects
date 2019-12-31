@@ -1,34 +1,50 @@
 #![no_std]
 #![no_main]
 
+#[macro_use]
 extern crate alloc;
 extern crate fe_osi;
+extern crate atomic_queue;
+#[macro_use]
+extern crate lazy_static;
+
 use fe_rtos;
 use rust_tm4c;
-use tm4c123x_hal as hal;
-
+use tm4c129x_hal as hal;
 use alloc::boxed::Box;
 use core::fmt::Write;
 use cortex_m::peripheral::scb::Exception;
 use hal::prelude::*;
+use atomic_queue::AtomicQueue;
 
-const CPU_FREQ: u32 = 80_000_000;
-static mut COUNTER: u8 = 0;
+static mut STORAGE: [char; 255] = [' '; 255];
+lazy_static! {
+    static ref QUEUE: AtomicQueue<'static, char> = {
+        let m = unsafe { AtomicQueue::new(&mut STORAGE) };
+        m
+    };
+}
 
-fn counter_task(_: &mut u32) {
-    unsafe {
-        loop {
-            COUNTER = COUNTER.wrapping_add(1);
-            fe_osi::sleep(1000);
+fn hello_world(_: &mut u8) {
+    let mut counter : u32 = 0;
+    loop {
+        let msg = format!("Hello, World! counter={}\r\n", counter);
+        for c in msg.chars() {
+            match QUEUE.push(c) {
+                Err(_) => panic!("No room to push?"),
+                Ok(_) => {},
+            }
         }
+        counter = counter.wrapping_add(1);
+        fe_osi::sleep(10);
     }
 }
 
-fn hello_world<T: Write>(writer: &mut T) {
-    unsafe {
-        loop {
-            writeln!(writer, "Hello, world! seconds={}", COUNTER).unwrap();
-            fe_osi::sleep(100);
+fn uart_transmit_server<T: Write>(serial: &mut T) {
+    loop {
+        match QUEUE.pop() {
+            Some(c) => { write!(serial, "{}", c).unwrap(); }
+            None => { fe_osi::sleep(10); }
         }
     }
 }
@@ -39,14 +55,13 @@ fn main() -> ! {
     let cp = hal::CorePeripherals::take().unwrap();
 
     let mut sc = p.SYSCTL.constrain();
-    let systick = cp.SYST;
     sc.clock_setup.oscillator = hal::sysctl::Oscillator::Main(
-        hal::sysctl::CrystalFrequency::_16mhz,
-        hal::sysctl::SystemClock::UsePll(hal::sysctl::PllOutputFrequency::_80_00mhz),
+        hal::sysctl::CrystalFrequency::_25mhz,
+        hal::sysctl::SystemClock::UsePll(hal::sysctl::PllOutputFrequency::_120mhz),
     );
     let clocks = sc.clock_setup.freeze();
 
-    let mut porta = p.GPIO_PORTA.split(&sc.power_control);
+    let mut porta = p.GPIO_PORTA_AHB.split(&sc.power_control);
 
     // Activate UART
     let uart0 = hal::serial::Serial::uart0(
@@ -81,16 +96,21 @@ fn main() -> ! {
     unsafe {
         fe_rtos::task::add_task(
             fe_rtos::task::DEFAULT_STACK_SIZE,
-            hello_world,
+            uart_transmit_server,
             Some(Box::new(uart0)),
         );
-        fe_rtos::task::add_task(fe_rtos::task::DEFAULT_STACK_SIZE, counter_task, None);
+
+        fe_rtos::task::add_task(
+            fe_rtos::task::DEFAULT_STACK_SIZE,
+            hello_world,
+            None,
+        );
     }
 
-    let reload_val: u32 = CPU_FREQ / 10000;
+    let reload_val: u32 = cortex_m::peripheral::SYST::get_ticks_per_10ms() / 10;
 
     // Start the FeRTOS scheduler
-    fe_rtos::task::start_scheduler(cortex_m::peripheral::SCB::set_pendsv, systick, reload_val);
+    fe_rtos::task::start_scheduler(cortex_m::peripheral::SCB::set_pendsv, cp.SYST, reload_val);
 
     loop {}
 }
