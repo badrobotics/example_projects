@@ -93,19 +93,17 @@ fn main() -> ! {
         fe_rtos::syscall::svc_handler,
     );
 
-    unsafe {
-        fe_rtos::task::add_task(
-            fe_rtos::task::DEFAULT_STACK_SIZE,
-            uart_transmit_server,
-            Some(Box::new(uart0)),
-        );
+    fe_osi::task::task_spawn(
+        fe_rtos::task::DEFAULT_STACK_SIZE,
+        uart_transmit_server,
+        Some(Box::new(uart0)),
+    );
 
-        fe_rtos::task::add_task(
-            fe_rtos::task::DEFAULT_STACK_SIZE,
-            hello_world,
-            None,
-        );
-    }
+    fe_osi::task::task_spawn(
+        fe_rtos::task::DEFAULT_STACK_SIZE,
+        hello_world,
+        None,
+    );
 
     let reload_val: u32 = cortex_m::peripheral::SYST::get_ticks_per_10ms() / 10;
 
