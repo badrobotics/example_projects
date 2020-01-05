@@ -3,19 +3,19 @@
 
 #[macro_use]
 extern crate alloc;
-extern crate fe_osi;
 extern crate atomic_queue;
+extern crate fe_osi;
 #[macro_use]
 extern crate lazy_static;
 
-use fe_rtos;
-use rust_tm4c;
-use tm4c129x_hal as hal;
 use alloc::boxed::Box;
+use atomic_queue::AtomicQueue;
 use core::fmt::Write;
 use cortex_m::peripheral::scb::Exception;
+use fe_rtos;
 use hal::prelude::*;
-use atomic_queue::AtomicQueue;
+use rust_tm4c;
+use tm4c129x_hal as hal;
 
 static mut STORAGE: [char; 255] = [' '; 255];
 lazy_static! {
@@ -26,13 +26,13 @@ lazy_static! {
 }
 
 fn hello_world(_: &mut u8) {
-    let mut counter : u32 = 0;
+    let mut counter: u32 = 0;
     loop {
         let msg = format!("Hello, World! counter={}\r\n", counter);
         for c in msg.chars() {
             match QUEUE.push(c) {
                 Err(_) => panic!("No room to push?"),
-                Ok(_) => {},
+                Ok(_) => {}
             }
         }
         counter = counter.wrapping_add(1);
@@ -43,8 +43,12 @@ fn hello_world(_: &mut u8) {
 fn uart_transmit_server<T: Write>(serial: &mut T) {
     loop {
         match QUEUE.pop() {
-            Some(c) => { write!(serial, "{}", c).unwrap(); }
-            None => { fe_osi::sleep(10); }
+            Some(c) => {
+                write!(serial, "{}", c).unwrap();
+            }
+            None => {
+                fe_osi::sleep(10);
+            }
         }
     }
 }
@@ -99,11 +103,7 @@ fn main() -> ! {
         Some(Box::new(uart0)),
     );
 
-    fe_osi::task::task_spawn(
-        fe_rtos::task::DEFAULT_STACK_SIZE,
-        hello_world,
-        None,
-    );
+    fe_osi::task::task_spawn(fe_rtos::task::DEFAULT_STACK_SIZE, hello_world, None);
 
     let reload_val: u32 = cortex_m::peripheral::SYST::get_ticks_per_10ms() / 10;
 
