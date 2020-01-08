@@ -11,6 +11,7 @@
             "servertype": "openocd",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/target/thumbv7em-none-eabihf/debug/fertos-project",
+            "preLaunchCommands": ["load"],
             "name": "Debug (OpenOCD)",
             "device": "TM4C1294NCPT",
             "gdbpath": "/usr/bin/gdb-multiarch",
