@@ -3,18 +3,17 @@
 
 #[macro_use]
 extern crate alloc;
-extern crate atomic_queue;
-extern crate fe_osi;
 #[macro_use]
 extern crate lazy_static;
 
 use alloc::boxed::Box;
+use atomic_queue;
 use atomic_queue::AtomicQueue;
 use core::fmt::Write;
 use cortex_m::peripheral::scb::Exception;
+use fe_osi;
 use fe_rtos;
 use hal::prelude::*;
-use rust_tm4c;
 use tm4c129x_hal as hal;
 
 static mut STORAGE: [char; 255] = [' '; 255];
@@ -84,18 +83,9 @@ fn main() -> ! {
         &sc.power_control,
     );
 
-    rust_tm4c::interrupt::int_register(
-        (Exception::SysTick.irqn() + 16) as u32,
-        fe_rtos::task::sys_tick,
-    );
-    rust_tm4c::interrupt::int_register(
-        (Exception::PendSV.irqn() + 16) as u32,
-        fe_rtos::task::context_switch,
-    );
-    rust_tm4c::interrupt::int_register(
-        (Exception::SVCall.irqn() + 16) as u32,
-        fe_rtos::syscall::svc_handler,
-    );
+    fe_rtos::interrupt::int_register(Exception::SysTick.irqn(), fe_rtos::task::sys_tick);
+    fe_rtos::interrupt::int_register(Exception::PendSV.irqn(), fe_rtos::task::context_switch);
+    fe_rtos::interrupt::int_register(Exception::SVCall.irqn(), fe_rtos::syscall::svc_handler);
 
     fe_osi::task::task_spawn(
         fe_rtos::task::DEFAULT_STACK_SIZE,

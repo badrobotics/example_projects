@@ -1,4 +1,4 @@
-use std::{env, error::Error, path::PathBuf};
+use std::{env, error::Error, fs::File, io::Write, path::PathBuf};
 
 fn main() -> Result<(), Box<dyn Error>> {
     //build directory for this crate
@@ -6,6 +6,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     //extend the library search path
     println!("cargo:rustc-link-search={}", out_dir.display());
+    File::create(out_dir.join("link.x"))?.write_all(include_bytes!("link.x"))?;
 
     Ok(())
 }

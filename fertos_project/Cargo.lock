@@ -82,6 +82,7 @@ dependencies = [
 [[package]]
 name = "fe_osi"
 version = "0.1.0"
+source = "git+https://github.com/badrobotics/fe_osi#f0201aaab416361588b924b9558b066ab9d6da54"
 dependencies = [
  "cc",
 ]
@@ -104,7 +105,6 @@ dependencies = [
  "fe_osi",
  "fe_rtos",
  "lazy_static",
- "rust_tm4c",
  "tm4c129x-hal",
 ]
 
@@ -140,14 +140,6 @@ name = "nb"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1411551beb3c11dedfb0a90a0fa256b47d28b9ec2cdff34c25a2fa59e45dbdc"
-
-[[package]]
-name = "rust_tm4c"
-version = "0.1.0"
-dependencies = [
- "cortex-m",
- "volatile-register",
-]
 
 [[package]]
 name = "rustc_version"
