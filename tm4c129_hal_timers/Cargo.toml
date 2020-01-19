@@ -15,7 +15,8 @@ atomic_queue            = { git = "https://github.com/thejpster/atomic-queue-rs"
 
 [dependencies.tm4c129x-hal]
 features = ["rt"]
-path = "../../../tm4c-hal/tm4c129x-hal"
+git = "https://github.com/badrobotics/tm4c-hal"
+branch = "tm4c129x_timers"
 
 [dependencies.lazy_static]
 version = "1.4.0"
