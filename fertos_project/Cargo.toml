@@ -9,6 +9,11 @@ version = "0.1.0"
 
 [dependencies]
 cortex-m = "0.6"
+atomic_queue    = { git = "https://github.com/thejpster/atomic-queue-rs" }
+
+[dependencies.lazy_static]
+version = "1.4.0"
+features = ["spin_no_std"]
 
 [dependencies.fe_rtos]
 path = "../../FeRTOS"
@@ -18,9 +23,9 @@ path = "../../fe_osi"
 
 [dependencies.rust_tm4c]
 path = "../../rust_tm4c"
-features = ["tm4c123"]
+#features = ["tm4c123"]
 
-[dependencies.tm4c123x-hal]
+[dependencies.tm4c129x-hal]
 version = "0.9.0"
 
 # this lets you use `cargo fix`!
