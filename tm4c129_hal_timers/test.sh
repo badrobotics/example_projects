@@ -5,8 +5,6 @@ set -euf -o pipefail
 serial_port="${1}"
 test_time="${2:-5}" # Default to 5 seconds of test time if the second argument isn't given
 
-stty -F "$serial_port" 115200
-
 (
     tt="$test_time"
     while (( $tt > 0 )); do
