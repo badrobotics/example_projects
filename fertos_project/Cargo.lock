@@ -21,12 +21,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "atomic_queue"
-version = "0.1.0"
-source = "git+https://github.com/thejpster/atomic-queue-rs#aff894e88a29a66c4427c1ad5d7fdd59f92eab62"
-dependencies = [
- "const-ft",
-]
+name = "autocfg"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8aac770f1885fd7e387acedd76065302551364496e46b3dd00860b2f8359b9d"
 
 [[package]]
 name = "bare-metal"
@@ -53,10 +51,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f52a465a666ca3d838ebbf08b241383421412fe7ebb463527bba275526d89f76"
 
 [[package]]
-name = "const-ft"
-version = "0.1.2"
+name = "cfg-if"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "990f5aebce907dc6f5e50e19b05e1095994b855a1ddd2aba8d4f2ec6802e59fd"
+checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
 
 [[package]]
 name = "cortex-m"
@@ -67,6 +65,26 @@ dependencies = [
  "aligned",
  "bare-metal",
  "volatile-register",
+]
+
+[[package]]
+name = "crossbeam-queue"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c695eeca1e7173472a32221542ae469b3e9aac3a4fc81f7696bcad82029493db"
+dependencies = [
+ "cfg-if",
+ "crossbeam-utils",
+]
+
+[[package]]
+name = "crossbeam-utils"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3c7c73a2d1e9fc0886a08b93e98eb643461230d5f1925e4036204d5f2e261a8"
+dependencies = [
+ "autocfg",
+ "cfg-if",
 ]
 
 [[package]]
@@ -82,7 +100,6 @@ dependencies = [
 [[package]]
 name = "fe_osi"
 version = "0.1.0"
-source = "git+https://github.com/badrobotics/fe_osi#f0201aaab416361588b924b9558b066ab9d6da54"
 dependencies = [
  "cc",
 ]
@@ -93,15 +110,17 @@ version = "0.1.0"
 dependencies = [
  "cc",
  "cortex-m",
+ "crossbeam-queue",
  "fe_osi",
+ "lazy_static",
 ]
 
 [[package]]
 name = "fertos-project"
 version = "0.1.0"
 dependencies = [
- "atomic_queue",
  "cortex-m",
+ "crossbeam-queue",
  "fe_osi",
  "fe_rtos",
  "lazy_static",

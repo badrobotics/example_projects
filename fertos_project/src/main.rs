@@ -7,47 +7,35 @@ extern crate alloc;
 extern crate lazy_static;
 
 use alloc::boxed::Box;
-use atomic_queue;
-use atomic_queue::AtomicQueue;
 use core::fmt::Write;
 use cortex_m::peripheral::scb::Exception;
 use fe_osi;
 use fe_rtos;
 use hal::prelude::*;
 use tm4c129x_hal as hal;
+use crossbeam_queue::{SegQueue, PopError};
+use alloc::string::String;
 
-static mut STORAGE: [char; 255] = [' '; 255];
 lazy_static! {
-    static ref QUEUE: AtomicQueue<'static, char> = {
-        let m = unsafe { AtomicQueue::new(&mut STORAGE) };
-        m
-    };
+    static ref MESSAGE_QUEUE: SegQueue<String> = SegQueue::new();
 }
+
 
 fn hello_world(_: &mut u8) {
     let mut counter: u32 = 0;
     loop {
         let msg = format!("Hello, World! counter={}\r\n", counter);
-        for c in msg.chars() {
-            match QUEUE.push(c) {
-                Err(_) => panic!("No room to push?"),
-                Ok(_) => {}
-            }
-        }
-        counter = counter.wrapping_add(1);
-        fe_osi::sleep(10);
+        MESSAGE_QUEUE.push(msg);
+        counter += 1;
+        fe_osi::sleep(100);
     }
 }
 
 fn uart_transmit_server<T: Write>(serial: &mut T) {
     loop {
-        match QUEUE.pop() {
-            Some(c) => {
-                write!(serial, "{}", c).unwrap();
-            }
-            None => {
-                fe_osi::sleep(10);
-            }
+        match MESSAGE_QUEUE.pop() {
+            Ok(msg) => { write!(serial, "{}", msg).unwrap(); }
+            Err(PopError) => { fe_osi::sleep(10); }
         }
     }
 }
