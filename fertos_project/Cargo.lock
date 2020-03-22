@@ -121,6 +121,7 @@ version = "0.1.0"
 dependencies = [
  "cortex-m",
  "crossbeam-queue",
+ "embedded-hal",
  "fe_osi",
  "fe_rtos",
  "lazy_static",
