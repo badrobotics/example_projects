@@ -17,7 +17,6 @@
             "gdbpath": "/usr/bin/gdb-multiarch",
             "configFiles": [
                 "board/ek-tm4c1294xl.cfg"
-                //"board/ek-tm4c123gxl.cfg"
             ]
         }
     ]

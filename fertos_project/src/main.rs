@@ -1,57 +1,19 @@
 #![no_std]
 #![no_main]
 
-#[macro_use]
-extern crate alloc;
-extern crate atomic_queue;
-extern crate fe_osi;
+mod cmd;
+mod uart_server;
+
 #[macro_use]
 extern crate lazy_static;
+extern crate alloc;
 
 use alloc::boxed::Box;
-use atomic_queue::AtomicQueue;
-use core::fmt::Write;
-use cortex_m::peripheral::scb::Exception;
-use fe_rtos;
 use hal::prelude::*;
-use rust_tm4c;
 use tm4c129x_hal as hal;
-
-static mut STORAGE: [char; 255] = [' '; 255];
-lazy_static! {
-    static ref QUEUE: AtomicQueue<'static, char> = {
-        let m = unsafe { AtomicQueue::new(&mut STORAGE) };
-        m
-    };
-}
-
-fn hello_world(_: &mut u8) {
-    let mut counter: u32 = 0;
-    loop {
-        let msg = format!("Hello, World! counter={}\r\n", counter);
-        for c in msg.chars() {
-            match QUEUE.push(c) {
-                Err(_) => panic!("No room to push?"),
-                Ok(_) => {}
-            }
-        }
-        counter = counter.wrapping_add(1);
-        fe_osi::sleep(10);
-    }
-}
-
-fn uart_transmit_server<T: Write>(serial: &mut T) {
-    loop {
-        match QUEUE.pop() {
-            Some(c) => {
-                write!(serial, "{}", c).unwrap();
-            }
-            None => {
-                fe_osi::sleep(10);
-            }
-        }
-    }
-}
+use cortex_m::peripheral::scb::Exception;
+use fe_osi;
+use fe_rtos;
 
 #[no_mangle]
 fn main() -> ! {
@@ -84,30 +46,28 @@ fn main() -> ! {
         &sc.power_control,
     );
 
-    rust_tm4c::interrupt::int_register(
-        (Exception::SysTick.irqn() + 16) as u32,
-        fe_rtos::task::sys_tick,
-    );
-    rust_tm4c::interrupt::int_register(
-        (Exception::PendSV.irqn() + 16) as u32,
-        fe_rtos::task::context_switch,
-    );
-    rust_tm4c::interrupt::int_register(
-        (Exception::SVCall.irqn() + 16) as u32,
-        fe_rtos::syscall::svc_handler,
+    fe_rtos::interrupt::int_register(Exception::SysTick.irqn(), fe_rtos::task::sys_tick);
+    fe_rtos::interrupt::int_register(Exception::PendSV.irqn(), fe_rtos::task::context_switch);
+    fe_rtos::interrupt::int_register(Exception::SVCall.irqn(), fe_rtos::syscall::svc_handler);
+
+    let (uart0_tx, uart0_rx) = uart0.split();
+
+    fe_osi::task::task_spawn(
+        fe_rtos::task::DEFAULT_STACK_SIZE,
+        uart_server::uart_transmit_server,
+        Some(Box::new(uart0_tx)),
     );
 
     fe_osi::task::task_spawn(
         fe_rtos::task::DEFAULT_STACK_SIZE,
-        uart_transmit_server,
-        Some(Box::new(uart0)),
+        uart_server::uart_receive_server,
+        Some(Box::new(uart0_rx)),
     );
 
-    fe_osi::task::task_spawn(fe_rtos::task::DEFAULT_STACK_SIZE, hello_world, None);
-
-    let reload_val: u32 = cortex_m::peripheral::SYST::get_ticks_per_10ms() / 10;
+    fe_osi::task::task_spawn(fe_rtos::task::DEFAULT_STACK_SIZE, cmd::cmd, None);
 
     // Start the FeRTOS scheduler
+    let reload_val: u32 = cortex_m::peripheral::SYST::get_ticks_per_10ms() / 10;
     fe_rtos::task::start_scheduler(cortex_m::peripheral::SCB::set_pendsv, cp.SYST, reload_val);
 
     loop {}
