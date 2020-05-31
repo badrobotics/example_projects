@@ -1,5 +1,5 @@
 [package]
-name = "tm4c129_hal_timers"
+name = "tm4c123_hal_timers"
 version = "0.1.0"
 authors = ["Alexander Wranovsky <alex@wranovsky.org>"]
 edition = "2018"

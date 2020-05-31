@@ -26,7 +26,7 @@ monitor arm semihosting enable
 # # enable ITM port 0
 # monitor itm port 0 on
 
-file target/thumbv7em-none-eabihf/debug/tm4c129_hal_timers
+file target/thumbv7em-none-eabihf/debug/tm4c123_hal_timers
 load
 
 # start the process but immediately halt the processor
